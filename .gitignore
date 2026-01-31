@@ -30,3 +30,5 @@ Thumbs.db
 
 # Poetry
 poetry.toml
+__pycache__/
+*.pyc
