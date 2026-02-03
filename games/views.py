@@ -5,3 +5,5 @@ from django.shortcuts import render
 def index(request: HttpRequest) -> HttpResponse: 
     return HttpResponse("Hi game")
 
+def lobby(request: HttpResponse) -> HttpResponse:
+    return HttpResponse("Lobby")
