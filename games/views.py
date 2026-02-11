@@ -2,7 +2,8 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from typing import cast
+from django.views import generic
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from games.models import Clocks
 
@@ -12,14 +13,14 @@ def index(request: HttpRequest) -> HttpResponse:
     return HttpResponse("Hi game")
 
 
-@login_required
-def lobby(request: HttpRequest) -> HttpResponse:
-    username = request.user.username
+class LobbyView(LoginRequiredMixin, generic.TemplateView):
+    template_name = "games/lobby.html"
 
-    clocks = Clocks.objects.all()
-
-    context = {"username": username, "clocks": clocks}
-    return render(request, "games/index.html", context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["username"] = self.request.user.get_username()
+        context["clocks"] = Clocks.objects.all()
+        return context
 
 
 @login_required
