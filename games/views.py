@@ -14,7 +14,7 @@ def index(request: HttpRequest) -> HttpResponse:
 
 
 class LobbyView(LoginRequiredMixin, generic.TemplateView):
-    template_name = "games/lobby.html"
+    template_name = "games/index.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
