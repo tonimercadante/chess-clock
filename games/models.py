@@ -2,10 +2,15 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
-Users = get_user_model()
+from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 
 
 # Create your models here.
+class User(AbstractUser):
+    rating = models.IntegerField()
+
+
 class Clocks(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     # updated_at = models.DateTimeField(auto_now=True)
@@ -18,8 +23,8 @@ class Clocks(models.Model):
 class Games(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     # updated_at = models.DateTimeField(auto_now=True)
-    player_white = models.ForeignKey(Users, related_name='white_games', on_delete=models.PROTECT)
-    player_black = models.ForeignKey(Users, related_name='black_games', on_delete=models.PROTECT)
+    player_white = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='white_games', on_delete=models.PROTECT)
+    player_black = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='black_games', on_delete=models.PROTECT)
     started_at = models.DateTimeField()
     ended_at = models.DateTimeField()
     clock = models.ForeignKey(Clocks, on_delete=models.PROTECT)
