@@ -1,0 +1,64 @@
+<span>Lobby</span>
+<h3>Hello, {{ username }}.</h3>
+<div>
+  <h2>New game</h2>
+  <form id="queue-form" action="{% url 'games:new' %}" method="post">
+    {% csrf_token %}
+    <fieldset>
+      <legend><h1>Select the game mode</h1></legend>
+      {% for clock in clocks %}
+      <input
+        type="radio"
+        name="clock"
+        id="{{ clock.id }}"
+        value="{{ clock.id }}"
+        required
+      />
+      <label for="{{ clock.id }}">{{ clock.name }}</label>
+      {% endfor %}
+      <input type="submit" value="New game" />
+    </fieldset>
+  </form>
+
+  <p id="status"></p>
+</div>
+
+<script>
+  const form = document.getElementById("queue-form");
+  const status = document.getElementById("status");
+  let socket = null;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    socket = new WebSocket(`ws://${window.location.host}/ws/queue/`);
+
+    socket.onopen = () => {
+      status.textContent = "Joining queue...";
+
+      fetch("{% url 'games:new' %}", {
+        method: "POST",
+        headers: { "X-CSRFToken": "{{ csrf_token }}" },
+        body: new FormData(form),
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === "queued") {
+          status.textContent = "Waiting for opponent...";
+        }
+      });
+    };
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.status === "matched") {
+        status.textContent = "Opponent found! Redirecting...";
+        window.location.href = `/game/${data.game_id}`;
+      }
+    };
+
+    socket.onclose = () => {
+      status.textContent = "Disconnected.";
+    };
+  });
+</script>
