@@ -1,4 +1,4 @@
 from .queue import QueueConsumer
-# from .game import GameConsumer
+from .game import GameConsumer
 
-__all__ = ['QueueConsumer']  # , 'GameConsumer'
+__all__ = ['QueueConsumer', 'GameConsumer']  
