@@ -43,6 +43,7 @@
     justify-content: center;
     gap: 80px;
   }
+
   .clock-container {
     display: flex;
     flex-direction: column;
@@ -51,19 +52,31 @@
     font-size: 0.9rem;
     letter-spacing: 0.25em;
   }
+  .clock-container.active {
+    background: #1a1a1a4d;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border-radius: 1rem;
+    padding: 24px;
+  }
+
   .clock-color-text {
     color: #1a1a1a;
     text-transform: uppercase;
     letter-spacing: 0.25em;
     font-size: 10px;
   }
+
   .clock {
-    background: #faf9f5;
+    background: #f0efe9;
     color: #1a1a1;
     padding: 48px 4px;
     font-size: 6rem;
     font-weight: 700;
     border-radius: 1rem;
+  }
+
+  .clock-turn-text {
+    text-align: center;
   }
 </style>
 
@@ -71,9 +84,10 @@
   <h3 class="title">chess clock</h3>
 
   <div class="clocks-match-container">
-    <div class="clock-container">
+    <div class="clock-container active" role="button">
       <span class="clock-color-text">White</span>
       <div class="clock">05:00</div>
+      <span class="clock-turn-text">Your turn</span>
     </div>
 
     <span class="clock-versus">VS</span>
@@ -84,3 +98,15 @@
     </div>
   </div>
 </section>
+
+<script>
+  let socket = null;
+
+  socket = new WebSocket(`ws://${window.location.host}/ws/game/5`);
+
+  socket.onopen = () => {};
+
+  socket.onmessage = (event) => {};
+
+  socket.onclose = () => {};
+</script>
