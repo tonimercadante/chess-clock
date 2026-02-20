@@ -1,0 +1,86 @@
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap"
+    rel="stylesheet"
+  />
+</head>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Geist Mono", monospace;
+    line-height: 1;
+  }
+  .title {
+    text-transform: uppercase;
+  }
+
+  .game-container {
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr; /* 3 lines */
+    grid-template-columns: 1fr; /* 1 column */
+    height: 100%;
+    width: 100%;
+    gap: 10px;
+    background: gray;
+  }
+
+  .title {
+    justify-self: center;
+    padding-top: 20px;
+    font-size: 0.9rem;
+    color: #f0efe9;
+  }
+
+  .clocks-match-container {
+    justify-self: center;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 80px;
+  }
+  .clock-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.25em;
+  }
+  .clock-color-text {
+    color: #1a1a1a;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    font-size: 10px;
+  }
+  .clock {
+    background: #faf9f5;
+    color: #1a1a1;
+    padding: 48px 4px;
+    font-size: 6rem;
+    font-weight: 700;
+    border-radius: 1rem;
+  }
+</style>
+
+<section class="game-container">
+  <h3 class="title">chess clock</h3>
+
+  <div class="clocks-match-container">
+    <div class="clock-container">
+      <span class="clock-color-text">White</span>
+      <div class="clock">05:00</div>
+    </div>
+
+    <span class="clock-versus">VS</span>
+
+    <div class="clock-container">
+      <span class="clock-color-text">White</span>
+      <div class="clock">05:00</div>
+    </div>
+  </div>
+</section>

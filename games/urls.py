@@ -6,6 +6,7 @@ app_name = "games"
 urlpatterns = [
     path("", views.index, name="index"),
     path("lobby", views.LobbyView.as_view(), name="lobby"),
-    path("new", views.new, name="new")
+    path("new", views.new, name="new"),
+    path("<int:game_id>", views.game, name="match")
 ]
 

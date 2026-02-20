@@ -41,8 +41,6 @@ def new(request: HttpRequest) -> HttpResponse:
         defaults={}
     )
 
-
-
     queue = f'mm:{clock.type.name}:{clock.start_time}:{clock.incremental_time}'
     
     opponent_id = redis_client.eval(
@@ -72,3 +70,13 @@ def new(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"status": "matched"})
 
     return JsonResponse({"status": "queued"})
+
+
+@login_required
+def game(request: HttpRequest, game_id: int) -> HttpResponse:
+    context = {}
+    return render(request, "games/game.html", context)
+
+    # return HttpResponse('match %s' % game_id)
+
+
