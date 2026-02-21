@@ -1,112 +1,495 @@
-<head>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap"
-    rel="stylesheet"
-  />
-</head>
-<style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Geist Mono", monospace;
-    line-height: 1;
-  }
-  .title {
-    text-transform: uppercase;
-  }
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chess Clock</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Geist Mono", monospace;
+        line-height: 1;
+      }
 
-  .game-container {
-    display: grid;
-    grid-template-rows: 1fr 1fr 1fr; /* 3 lines */
-    grid-template-columns: 1fr; /* 1 column */
-    height: 100%;
-    width: 100%;
-    gap: 10px;
-    background: gray;
-  }
+      :root {
+        --bg: #f0efe9;
+        --title-color: #1a1a1a;
+        --vs-border: #1a1a1a;
+        --vs-color: #1a1a1a;
+        --turn-dot: #1a1a1a;
+        --status-color: rgba(26, 26, 26, 0.5);
+        --red: #e53e3e;
+      }
 
-  .title {
-    justify-self: center;
-    padding-top: 20px;
-    font-size: 0.9rem;
-    color: #f0efe9;
-  }
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+      }
 
-  .clocks-match-container {
-    justify-self: center;
-    align-self: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 80px;
-  }
+      .game-container {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        height: 100vh;
+        width: 100%;
+        background: var(--bg);
+        transition: background 0.5s ease;
+      }
 
-  .clock-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    letter-spacing: 0.25em;
-  }
-  .clock-container.active {
-    background: #1a1a1a4d;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    border-radius: 1rem;
-    padding: 24px;
-  }
+      /* Background themes */
+      .game-container.theme-white {
+        --bg: #f0efe9;
+        --title-color: #1a1a1a;
+        --vs-border: #1a1a1a;
+        --vs-color: #1a1a1a;
+        --turn-dot: #1a1a1a;
+        --status-color: rgba(26, 26, 26, 0.45);
+      }
 
-  .clock-color-text {
-    color: #1a1a1a;
-    text-transform: uppercase;
-    letter-spacing: 0.25em;
-    font-size: 10px;
-  }
+      .game-container.theme-black {
+        --bg: #1a1a1a;
+        --title-color: #f0efe9;
+        --vs-border: #f0efe9;
+        --vs-color: #f0efe9;
+        --turn-dot: #f0efe9;
+        --status-color: rgba(240, 239, 233, 0.45);
+      }
 
-  .clock {
-    background: #f0efe9;
-    color: #1a1a1;
-    padding: 48px 4px;
-    font-size: 6rem;
-    font-weight: 700;
-    border-radius: 1rem;
-  }
+      .title {
+        text-transform: uppercase;
+        justify-self: center;
+        padding-top: 28px;
+        font-size: 0.75rem;
+        color: var(--title-color);
+        letter-spacing: 0.25em;
+        transition: color 0.5s ease;
+      }
 
-  .clock-turn-text {
-    text-align: center;
-  }
-</style>
+      .clocks-match-container {
+        justify-self: center;
+        align-self: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 36px;
+      }
 
-<section class="game-container">
-  <h3 class="title">chess clock</h3>
+      /* ---- Clock wrapper (the card with label + clock + turn text) ---- */
+      .clock-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+      }
 
-  <div class="clocks-match-container">
-    <div class="clock-container active" role="button">
-      <span class="clock-color-text">White</span>
-      <div class="clock">05:00</div>
-      <span class="clock-turn-text">Your turn</span>
-    </div>
+      .clock-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-    <span class="clock-versus">VS</span>
+      .clock-color-text {
+        text-transform: uppercase;
+        letter-spacing: 0.25em;
+        font-size: 10px;
+        font-weight: 700;
+        transition: color 0.4s;
+      }
 
-    <div class="clock-container">
-      <span class="clock-color-text">White</span>
-      <div class="clock">05:00</div>
-    </div>
-  </div>
-</section>
+      .clock-move-count {
+        font-size: 10px;
+        letter-spacing: 0.15em;
+        transition: color 0.4s;
+      }
 
-<script>
-  let socket = null;
+      /* The actual clock face */
+      .clock {
+        padding: 44px 28px;
+        font-size: 5.5rem;
+        font-weight: 700;
+        border-radius: 1.1rem;
+        width: 320px;
+        text-align: center;
+        transition:
+          color 0.3s,
+          opacity 0.4s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-  socket = new WebSocket(`ws://${window.location.host}/ws/game/5`);
+      .clock.low-time {
+        color: var(--red) !important;
+      }
 
-  socket.onopen = () => {};
+      .clock .sep {
+        margin: 0 4px;
+        transition: color 0.3s;
+        pointer-events: none;
+      }
 
-  socket.onmessage = (event) => {};
+      .clock,
+      .clock * {
+        pointer-events: none;
+      }
 
-  socket.onclose = () => {};
-</script>
+      /* White clock face */
+      .clock-wrapper.player-white .clock {
+        background: #f0efe9;
+        color: #1a1a1a;
+      }
+      .clock-wrapper.player-white .clock .sep {
+        color: #aaa;
+      }
+
+      /* Black clock face */
+      .clock-wrapper.player-black .clock {
+        background: #1a1a1a;
+        color: #f0efe9;
+      }
+      .clock-wrapper.player-black .clock .sep {
+        color: #555;
+      }
+
+      /* ---- Active state ---- */
+      .clock-wrapper.active .clock-color-text,
+      .clock-wrapper.active .clock-move-count {
+        color: var(--title-color);
+      }
+
+      /* White active on white bg → full card highlight */
+      .game-container.theme-white .clock-wrapper.player-white.active {
+        background: rgba(0, 0, 0, 0.04);
+        border-radius: 1.4rem;
+        padding: 20px;
+        margin: -20px;
+      }
+
+      /* Black active on black bg → full card highlight */
+      .game-container.theme-black .clock-wrapper.player-black.active {
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 1.4rem;
+        padding: 20px;
+        margin: -20px;
+      }
+
+      /* ---- Inactive state ---- */
+      .clock-wrapper.inactive .clock {
+        opacity: 0.45;
+      }
+
+      .clock-wrapper.inactive .clock-color-text,
+      .clock-wrapper.inactive .clock-move-count {
+        color: var(--status-color);
+      }
+
+      /* ---- Turn text ---- */
+      .clock-turn-text {
+        text-align: center;
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        min-height: 1em;
+        opacity: 0;
+        transition: opacity 0.3s;
+        color: var(--turn-dot);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+
+      .clock-turn-text::before {
+        content: "";
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--turn-dot);
+        flex-shrink: 0;
+      }
+
+      .clock-wrapper.active .clock-turn-text {
+        opacity: 1;
+      }
+
+      /* ---- Progress bar under active clock ---- */
+      .clock-progress {
+        height: 2px;
+        border-radius: 999px;
+        background: rgba(128, 128, 128, 0.2);
+        overflow: hidden;
+      }
+
+      .clock-progress-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: var(--title-color);
+        transition:
+          width 0.25s linear,
+          background 0.3s;
+      }
+
+      .clock-wrapper.inactive .clock-progress {
+        opacity: 0;
+      }
+
+      /* ---- VS badge ---- */
+      .clock-versus {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        color: var(--vs-color);
+        border: 1.5px solid var(--vs-border);
+        border-radius: 9999px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition:
+          color 0.5s,
+          border-color 0.5s;
+      }
+
+      /* ---- Status bar ---- */
+      .status-bar {
+        justify-self: center;
+        padding-bottom: 28px;
+        font-size: 0.65rem;
+        color: var(--status-color);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        transition: color 0.5s;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="game-container theme-white" id="game-container">
+      <h3 class="title">Chess Clock</h3>
+
+      <div class="clocks-match-container">
+        <!-- Left: White -->
+        <div
+          class="clock-wrapper player-white active"
+          id="left-wrapper"
+          role="button"
+          tabindex="0"
+        >
+          <div class="clock-header">
+            <span class="clock-color-text" id="left-label">White</span>
+            <span class="clock-move-count" id="left-moves">0 MOVES</span>
+          </div>
+          <div class="clock" id="left-clock">
+            <span id="left-time">05<span class="sep">:</span>00</span>
+          </div>
+          <div class="clock-progress">
+            <div
+              class="clock-progress-fill"
+              id="left-bar"
+              style="width: 100%"
+            ></div>
+          </div>
+          <span class="clock-turn-text" id="left-turn">Your turn</span>
+        </div>
+
+        <span class="clock-versus">VS</span>
+
+        <!-- Right: Black -->
+        <div
+          class="clock-wrapper player-black inactive"
+          id="right-wrapper"
+          role="button"
+          tabindex="0"
+        >
+          <div class="clock-header">
+            <span class="clock-color-text" id="right-label">Black</span>
+            <span class="clock-move-count" id="right-moves">0 MOVES</span>
+          </div>
+          <div class="clock" id="right-clock">
+            <span id="right-time">05<span class="sep">:</span>00</span>
+          </div>
+          <div class="clock-progress">
+            <div
+              class="clock-progress-fill"
+              id="right-bar"
+              style="width: 100%"
+            ></div>
+          </div>
+          <span class="clock-turn-text" id="right-turn">Your turn</span>
+        </div>
+      </div>
+
+      <div class="status-bar" id="status-bar">
+        Click your clock to start &amp; switch turns
+      </div>
+    </section>
+
+    <script>
+      const INITIAL_TIME_MS = 5 * 60 * 1000;
+
+      let state = {
+        currentPlayer: "white",
+        times: { white: INITIAL_TIME_MS, black: INITIAL_TIME_MS },
+        moves: { white: 0, black: 0 },
+        running: false,
+        gameOver: false,
+      };
+
+      let intervalId = null;
+      let lastTick = null;
+
+      const gameContainer = document.getElementById("game-container");
+      const leftWrapper = document.getElementById("left-wrapper");
+      const rightWrapper = document.getElementById("right-wrapper");
+      const leftClock = document.getElementById("left-clock");
+      const rightClock = document.getElementById("right-clock");
+      const leftTime = document.getElementById("left-time");
+      const rightTime = document.getElementById("right-time");
+      const leftTurn = document.getElementById("left-turn");
+      const rightTurn = document.getElementById("right-turn");
+      const leftBar = document.getElementById("left-bar");
+      const rightBar = document.getElementById("right-bar");
+      const leftMoves = document.getElementById("left-moves");
+      const rightMoves = document.getElementById("right-moves");
+      const statusBar = document.getElementById("status-bar");
+
+      function formatTime(ms) {
+        if (ms <= 0) return `00<span class="sep">:</span>00`;
+        const totalSeconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        if (minutes === 0) {
+          const centiseconds = Math.floor((ms % 1000) / 10);
+          return `${String(seconds).padStart(2, "0")}<span class="sep">.</span>${String(centiseconds).padStart(2, "0")}`;
+        }
+        return `${String(minutes).padStart(2, "0")}<span class="sep">:</span>${String(seconds).padStart(2, "0")}`;
+      }
+
+      function render() {
+        const { currentPlayer, times, moves } = state;
+        const whiteActive = currentPlayer === "white";
+
+        // Background theme
+        gameContainer.className = `game-container ${whiteActive ? "theme-white" : "theme-black"}`;
+
+        // Active / inactive
+        leftWrapper.className = `clock-wrapper player-white ${whiteActive ? "active" : "inactive"}`;
+        rightWrapper.className = `clock-wrapper player-black ${!whiteActive ? "active" : "inactive"}`;
+
+        // Times
+        leftTime.innerHTML = formatTime(times.white);
+        rightTime.innerHTML = formatTime(times.black);
+
+        // Low time
+        leftClock.classList.toggle("low-time", times.white <= 60000);
+        rightClock.classList.toggle("low-time", times.black <= 60000);
+
+        // Progress bars
+        leftBar.style.width =
+          ((times.white / INITIAL_TIME_MS) * 100).toFixed(2) + "%";
+        rightBar.style.width =
+          ((times.black / INITIAL_TIME_MS) * 100).toFixed(2) + "%";
+        leftBar.style.background =
+          times.white <= 60000 ? "#e53e3e" : "var(--title-color)";
+        rightBar.style.background =
+          times.black <= 60000 ? "#e53e3e" : "var(--title-color)";
+
+        // Move counts
+        leftMoves.textContent = `${moves.white} MOVE${moves.white !== 1 ? "S" : ""}`;
+        rightMoves.textContent = `${moves.black} MOVE${moves.black !== 1 ? "S" : ""}`;
+
+        // Turn text content (visibility handled by CSS .active)
+        leftTurn.textContent = "Your turn";
+        rightTurn.textContent = "Your turn";
+      }
+
+      function tick() {
+        const now = Date.now();
+        const elapsed = now - lastTick;
+        lastTick = now;
+
+        const player = state.currentPlayer;
+        state.times[player] = Math.max(0, state.times[player] - elapsed);
+
+        if (state.times[player] === 0) {
+          stopClock();
+          state.gameOver = true;
+          const winner = player === "white" ? "Black" : "White";
+          statusBar.textContent = `${player === "white" ? "White" : "Black"} ran out of time — ${winner} wins`;
+        }
+
+        render();
+      }
+
+      function startClock() {
+        if (intervalId) return;
+        lastTick = Date.now();
+        intervalId = setInterval(tick, 50);
+        state.running = true;
+        statusBar.textContent = "Click your clock after each move";
+      }
+
+      function stopClock() {
+        clearInterval(intervalId);
+        intervalId = null;
+        state.running = false;
+      }
+
+      function switchTurn() {
+        if (state.gameOver) return;
+        // Count move for current active player (only if already running)
+        if (state.running) state.moves[state.currentPlayer]++;
+        state.currentPlayer =
+          state.currentPlayer === "white" ? "black" : "white";
+        if (!state.running) startClock();
+        lastTick = Date.now();
+        render();
+      }
+
+      // Only the active player's clock is clickable to switch
+      leftWrapper.addEventListener("click", () => {
+        if (state.currentPlayer === "white") switchTurn();
+      });
+      rightWrapper.addEventListener("click", () => {
+        if (state.currentPlayer === "black") switchTurn();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.code === "Space") {
+          e.preventDefault();
+          switchTurn();
+        }
+      });
+
+      // WebSocket
+      let socket = null;
+      try {
+        socket = new WebSocket(`ws://${window.location.host}/ws/game/5/`);
+        socket.onopen = () => {};
+        socket.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            console.log("Received data:", data);
+            if (data.currentPlayer) state.currentPlayer = data.currentPlayer;
+            if (data.times) state.times = data.times;
+            render();
+          } catch {}
+        };
+        socket.onclose = () => {};
+      } catch {}
+
+      render();
+    </script>
+  </body>
+</html>

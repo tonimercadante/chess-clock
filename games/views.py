@@ -74,7 +74,10 @@ def new(request: HttpRequest) -> HttpResponse:
 
 @login_required
 def game(request: HttpRequest, game_id: int) -> HttpResponse:
-    context = {}
+    user = request.user
+    context = {
+            'username': user.username
+    }
     return render(request, "games/game.html", context)
 
     # return HttpResponse('match %s' % game_id)
