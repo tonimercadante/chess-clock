@@ -454,6 +454,9 @@
           state.currentPlayer === "white" ? "black" : "white";
         if (!state.running) startClock();
         lastTick = Date.now();
+
+        socket.send(JSON.stringify({ type: "tap" }));
+
         render();
       }
 
