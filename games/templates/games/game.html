@@ -44,7 +44,6 @@
         transition: background 0.5s ease;
       }
 
-      /* Background themes */
       .game-container.theme-white {
         --bg: #f0efe9;
         --title-color: #1a1a1a;
@@ -53,7 +52,6 @@
         --turn-dot: #1a1a1a;
         --status-color: rgba(26, 26, 26, 0.45);
       }
-
       .game-container.theme-black {
         --bg: #1a1a1a;
         --title-color: #f0efe9;
@@ -82,7 +80,6 @@
         gap: 36px;
       }
 
-      /* ---- Clock wrapper (the card with label + clock + turn text) ---- */
       .clock-wrapper {
         display: flex;
         flex-direction: column;
@@ -105,14 +102,12 @@
         font-weight: 700;
         transition: color 0.4s;
       }
-
       .clock-move-count {
         font-size: 10px;
         letter-spacing: 0.15em;
         transition: color 0.4s;
       }
 
-      /* The actual clock face */
       .clock {
         padding: 44px 28px;
         font-size: 5.5rem;
@@ -127,23 +122,19 @@
         align-items: center;
         justify-content: center;
       }
-
       .clock.low-time {
         color: var(--red) !important;
       }
-
       .clock .sep {
         margin: 0 4px;
         transition: color 0.3s;
         pointer-events: none;
       }
-
       .clock,
       .clock * {
         pointer-events: none;
       }
 
-      /* White clock face */
       .clock-wrapper.player-white .clock {
         background: #f0efe9;
         color: #1a1a1a;
@@ -151,8 +142,6 @@
       .clock-wrapper.player-white .clock .sep {
         color: #aaa;
       }
-
-      /* Black clock face */
       .clock-wrapper.player-black .clock {
         background: #1a1a1a;
         color: #f0efe9;
@@ -161,21 +150,17 @@
         color: #555;
       }
 
-      /* ---- Active state ---- */
       .clock-wrapper.active .clock-color-text,
       .clock-wrapper.active .clock-move-count {
         color: var(--title-color);
       }
 
-      /* White active on white bg → full card highlight */
       .game-container.theme-white .clock-wrapper.player-white.active {
         background: rgba(0, 0, 0, 0.04);
         border-radius: 1.4rem;
         padding: 20px;
         margin: -20px;
       }
-
-      /* Black active on black bg → full card highlight */
       .game-container.theme-black .clock-wrapper.player-black.active {
         background: rgba(255, 255, 255, 0.06);
         border-radius: 1.4rem;
@@ -183,17 +168,14 @@
         margin: -20px;
       }
 
-      /* ---- Inactive state ---- */
       .clock-wrapper.inactive .clock {
         opacity: 0.45;
       }
-
       .clock-wrapper.inactive .clock-color-text,
       .clock-wrapper.inactive .clock-move-count {
         color: var(--status-color);
       }
 
-      /* ---- Turn text ---- */
       .clock-turn-text {
         text-align: center;
         font-size: 0.7rem;
@@ -208,7 +190,6 @@
         justify-content: center;
         gap: 6px;
       }
-
       .clock-turn-text::before {
         content: "";
         display: inline-block;
@@ -218,19 +199,16 @@
         background: var(--turn-dot);
         flex-shrink: 0;
       }
-
       .clock-wrapper.active .clock-turn-text {
         opacity: 1;
       }
 
-      /* ---- Progress bar under active clock ---- */
       .clock-progress {
         height: 2px;
         border-radius: 999px;
         background: rgba(128, 128, 128, 0.2);
         overflow: hidden;
       }
-
       .clock-progress-fill {
         height: 100%;
         border-radius: 999px;
@@ -239,12 +217,10 @@
           width 0.25s linear,
           background 0.3s;
       }
-
       .clock-wrapper.inactive .clock-progress {
         opacity: 0;
       }
 
-      /* ---- VS badge ---- */
       .clock-versus {
         font-size: 0.65rem;
         font-weight: 700;
@@ -262,7 +238,6 @@
           border-color 0.5s;
       }
 
-      /* ---- Status bar ---- */
       .status-bar {
         justify-self: center;
         padding-bottom: 28px;
@@ -271,6 +246,178 @@
         letter-spacing: 0.2em;
         text-transform: uppercase;
         transition: color 0.5s;
+      }
+
+      /* Connection indicator */
+      .conn-dot {
+        position: fixed;
+        bottom: 10px;
+        right: 14px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #bbb;
+        transition: background 0.3s;
+      }
+      .conn-dot.connected {
+        background: #48bb78;
+      }
+      .conn-dot.error {
+        background: #e53e3e;
+      }
+
+      .clock-wrapper.is-mine.active .clock {
+        box-shadow: 0 0 0 3px var(--title-color);
+        animation: pulse-ring 1.8s ease-in-out infinite;
+      }
+      @keyframes pulse-ring {
+        0%,
+        100% {
+          box-shadow: 0 0 0 3px var(--title-color);
+        }
+        50% {
+          box-shadow: 0 0 0 6px transparent;
+        }
+      }
+
+      /* Opponent's clock — no pointer, no hover affordance */
+      .clock-wrapper.is-theirs {
+        cursor: default;
+      }
+      .clock-wrapper.is-theirs.active .clock {
+        /* Show it's ticking but not yours to tap */
+        opacity: 0.75;
+      }
+
+      /* "Tap to confirm move" label only on your own active clock */
+      .clock-turn-text.waiting-label {
+        opacity: 1;
+        color: var(--status-color);
+        font-style: italic;
+      }
+
+      /* ── Game Over Overlay ───────────────────────────────────────────── */
+      .game-over-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+        animation: fade-in 0.4s ease;
+      }
+      .game-over-overlay.visible {
+        display: flex;
+      }
+      .game-over-overlay.winner-white {
+        background: #f0efe9;
+        color: #1a1a1a;
+      }
+      .game-over-overlay.winner-black {
+        background: #1a1a1a;
+        color: #f0efe9;
+      }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .game-over-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        text-align: center;
+      }
+
+      .game-over-reason {
+        font-size: 0.65rem;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        opacity: 0.5;
+      }
+
+      .game-over-title {
+        font-size: 2.4rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin: 4px 0 6px;
+      }
+
+      .game-over-subtitle {
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+        opacity: 0.55;
+        margin-bottom: 24px;
+      }
+
+      .game-over-moves {
+        display: flex;
+        align-items: center;
+        gap: 36px;
+        margin-bottom: 32px;
+      }
+
+      .game-over-moves-side {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .game-over-moves-count {
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      .game-over-moves-label {
+        font-size: 0.6rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        opacity: 0.45;
+      }
+
+      .game-over-divider {
+        width: 1px;
+        height: 40px;
+        opacity: 0.2;
+      }
+      .winner-white .game-over-divider {
+        background: #1a1a1a;
+      }
+      .winner-black .game-over-divider {
+        background: #f0efe9;
+      }
+
+      .game-over-btn {
+        padding: 14px 36px;
+        border-radius: 9999px;
+        font-family: "Geist Mono", monospace;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        cursor: pointer;
+        border: none;
+        transition: opacity 0.2s;
+      }
+      .game-over-btn:hover {
+        opacity: 0.8;
+      }
+      .winner-white .game-over-btn {
+        background: #1a1a1a;
+        color: #f0efe9;
+      }
+      .winner-black .game-over-btn {
+        background: #f0efe9;
+        color: #1a1a1a;
       }
     </style>
   </head>
@@ -287,11 +434,17 @@
           tabindex="0"
         >
           <div class="clock-header">
-            <span class="clock-color-text" id="left-label">White</span>
+            <span class="clock-color-text" id="left-label"
+              >{{ white_nickname }}</span
+            >
             <span class="clock-move-count" id="left-moves">0 MOVES</span>
           </div>
           <div class="clock" id="left-clock">
-            <span id="left-time">05<span class="sep">:</span>00</span>
+            <span id="left-time"
+              >{{ start_time_minutes|stringformat:"02d" }}<span class="sep"
+                >:</span
+              >00</span
+            >
           </div>
           <div class="clock-progress">
             <div
@@ -313,11 +466,17 @@
           tabindex="0"
         >
           <div class="clock-header">
-            <span class="clock-color-text" id="right-label">Black</span>
+            <span class="clock-color-text" id="right-label"
+              >{{ black_nickname }}</span
+            >
             <span class="clock-move-count" id="right-moves">0 MOVES</span>
           </div>
           <div class="clock" id="right-clock">
-            <span id="right-time">05<span class="sep">:</span>00</span>
+            <span id="right-time"
+              >{{ start_time_minutes|stringformat:"02d" }}<span class="sep"
+                >:</span
+              >00</span
+            >
           </div>
           <div class="clock-progress">
             <div
@@ -333,10 +492,37 @@
       <div class="status-bar" id="status-bar">
         Click your clock to start &amp; switch turns
       </div>
+      <div class="game-over-overlay" id="game-over-overlay">
+        <div class="game-over-card">
+          <span class="game-over-reason" id="go-reason">Time Expired</span>
+          <h2 class="game-over-title" id="go-title">White wins</h2>
+          <p class="game-over-subtitle" id="go-subtitle">
+            Black ran out of time
+          </p>
+          <div class="game-over-moves">
+            <div class="game-over-moves-side">
+              <span class="game-over-moves-count" id="go-white-moves">0</span>
+              <span class="game-over-moves-label">White Moves</span>
+            </div>
+            <div class="game-over-divider"></div>
+            <div class="game-over-moves-side">
+              <span class="game-over-moves-count" id="go-black-moves">0</span>
+              <span class="game-over-moves-label">Black Moves</span>
+            </div>
+          </div>
+          <button class="game-over-btn" id="go-new-game">New Game</button>
+        </div>
+      </div>
     </section>
 
+    <div class="conn-dot" id="conn-dot"></div>
+
     <script>
-      const INITIAL_TIME_MS = 5 * 60 * 1000;
+      // ── Config injected from Django ──────────────────────────────────────
+      const GAME_ID         = {{ game_id }};
+      const INITIAL_TIME_MS = {{ start_time_ms }};
+      const PLAYER_COLOR    = "{{ player_color }}"; // "white", "black", or ""
+      // ─────────────────────────────────────────────────────────────────────
 
       let state = {
         currentPlayer: "white",
@@ -356,46 +542,66 @@
       const rightClock = document.getElementById("right-clock");
       const leftTime = document.getElementById("left-time");
       const rightTime = document.getElementById("right-time");
-      const leftTurn = document.getElementById("left-turn");
-      const rightTurn = document.getElementById("right-turn");
       const leftBar = document.getElementById("left-bar");
       const rightBar = document.getElementById("right-bar");
       const leftMoves = document.getElementById("left-moves");
       const rightMoves = document.getElementById("right-moves");
       const statusBar = document.getElementById("status-bar");
+      const connDot = document.getElementById("conn-dot");
+
+      // ENDING
+
+      const overlay = document.getElementById("game-over-overlay");
+      const goTitle = document.getElementById("go-title");
+      const goSubtitle = document.getElementById("go-subtitle");
+      const goReason = document.getElementById("go-reason");
+      const goWhiteMoves = document.getElementById("go-white-moves");
+      const goBlackMoves = document.getElementById("go-black-moves");
+
+      // ── Formatting ───────────────────────────────────────────────────────
 
       function formatTime(ms) {
         if (ms <= 0) return `00<span class="sep">:</span>00`;
-        const totalSeconds = Math.floor(ms / 1000);
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
+        const totalSec = Math.floor(ms / 1000);
+        const minutes = Math.floor(totalSec / 60);
+        const seconds = totalSec % 60;
         if (minutes === 0) {
-          const centiseconds = Math.floor((ms % 1000) / 10);
-          return `${String(seconds).padStart(2, "0")}<span class="sep">.</span>${String(centiseconds).padStart(2, "0")}`;
+          const cs = Math.floor((ms % 1000) / 10);
+          return `${String(seconds).padStart(2, "0")}<span class="sep">.</span>${String(cs).padStart(2, "0")}`;
         }
         return `${String(minutes).padStart(2, "0")}<span class="sep">:</span>${String(seconds).padStart(2, "0")}`;
       }
+
+      // ── Render ───────────────────────────────────────────────────────────
 
       function render() {
         const { currentPlayer, times, moves } = state;
         const whiteActive = currentPlayer === "white";
 
-        // Background theme
         gameContainer.className = `game-container ${whiteActive ? "theme-white" : "theme-black"}`;
 
-        // Active / inactive
-        leftWrapper.className = `clock-wrapper player-white ${whiteActive ? "active" : "inactive"}`;
-        rightWrapper.className = `clock-wrapper player-black ${!whiteActive ? "active" : "inactive"}`;
+        // Assign is-mine / is-theirs based on who's viewing
+        const leftMine = PLAYER_COLOR === "white" || PLAYER_COLOR === "";
+        const rightMine = PLAYER_COLOR === "black" || PLAYER_COLOR === "";
 
-        // Times
+        leftWrapper.className = [
+          "clock-wrapper player-white",
+          whiteActive ? "active" : "inactive",
+          leftMine ? "is-mine" : "is-theirs",
+        ].join(" ");
+
+        rightWrapper.className = [
+          "clock-wrapper player-black",
+          !whiteActive ? "active" : "inactive",
+          rightMine ? "is-mine" : "is-theirs",
+        ].join(" ");
+
         leftTime.innerHTML = formatTime(times.white);
         rightTime.innerHTML = formatTime(times.black);
 
-        // Low time
         leftClock.classList.toggle("low-time", times.white <= 60000);
         rightClock.classList.toggle("low-time", times.black <= 60000);
 
-        // Progress bars
         leftBar.style.width =
           ((times.white / INITIAL_TIME_MS) * 100).toFixed(2) + "%";
         rightBar.style.width =
@@ -405,14 +611,37 @@
         rightBar.style.background =
           times.black <= 60000 ? "#e53e3e" : "var(--title-color)";
 
-        // Move counts
         leftMoves.textContent = `${moves.white} MOVE${moves.white !== 1 ? "S" : ""}`;
         rightMoves.textContent = `${moves.black} MOVE${moves.black !== 1 ? "S" : ""}`;
 
-        // Turn text content (visibility handled by CSS .active)
-        leftTurn.textContent = "Your turn";
-        rightTurn.textContent = "Your turn";
+        // Turn text: "Tap to move" for yours, "Opponent's turn" for theirs
+        const leftTurnEl = document.getElementById("left-turn");
+        const rightTurnEl = document.getElementById("right-turn");
+
+        if (whiteActive) {
+          leftTurnEl.textContent =
+            PLAYER_COLOR === "white"
+              ? "Tap to confirm move"
+              : "Opponent's turn";
+          leftTurnEl.classList.toggle(
+            "waiting-label",
+            PLAYER_COLOR !== "white",
+          );
+          rightTurnEl.textContent = "";
+        } else {
+          rightTurnEl.textContent =
+            PLAYER_COLOR === "black"
+              ? "Tap to confirm move"
+              : "Opponent's turn";
+          rightTurnEl.classList.toggle(
+            "waiting-label",
+            PLAYER_COLOR !== "black",
+          );
+          leftTurnEl.textContent = "";
+        }
       }
+
+      // ── Local clock tick (keeps display smooth between server updates) ───
 
       function tick() {
         const now = Date.now();
@@ -422,11 +651,10 @@
         const player = state.currentPlayer;
         state.times[player] = Math.max(0, state.times[player] - elapsed);
 
-        if (state.times[player] === 0) {
+        if (state.times[player] === 0 && !state.gameOver) {
           stopClock();
-          state.gameOver = true;
-          const winner = player === "white" ? "Black" : "White";
-          statusBar.textContent = `${player === "white" ? "White" : "Black"} ran out of time — ${winner} wins`;
+          const winner = player === "white" ? "black" : "white";
+          showGameOver(winner, "timeout");
         }
 
         render();
@@ -446,53 +674,124 @@
         state.running = false;
       }
 
+      // ── Turn switch (send tap to server; server is authoritative) ────────
+
       function switchTurn() {
         if (state.gameOver) return;
-        // Count move for current active player (only if already running)
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          socket.send(JSON.stringify({ type: "move" }));
+        }
+        // Optimistic local update so UI feels instant
         if (state.running) state.moves[state.currentPlayer]++;
         state.currentPlayer =
           state.currentPlayer === "white" ? "black" : "white";
         if (!state.running) startClock();
         lastTick = Date.now();
-
-        socket.send(JSON.stringify({ type: "tap" }));
-
         render();
       }
 
-      // Only the active player's clock is clickable to switch
       leftWrapper.addEventListener("click", () => {
+        if (PLAYER_COLOR !== "white") return; // not your clock
         if (state.currentPlayer === "white") switchTurn();
       });
       rightWrapper.addEventListener("click", () => {
+        if (PLAYER_COLOR !== "black") return; // not your clock
         if (state.currentPlayer === "black") switchTurn();
       });
-
       document.addEventListener("keydown", (e) => {
-        if (e.code === "Space") {
-          e.preventDefault();
-          switchTurn();
-        }
+        if (e.code !== "Space") return;
+        e.preventDefault();
+        if (PLAYER_COLOR && state.currentPlayer === PLAYER_COLOR) switchTurn();
       });
 
-      // WebSocket
+      // ENDING
+
+      function showGameOver(winner, reason) {
+        stopClock();
+        state.gameOver = true;
+
+        const reasonLabels = {
+          timeout: "Time Expired",
+          checkmate: "Checkmate",
+          resignation: "Resignation",
+          draw: "Draw",
+        };
+
+        const subtitleMap = {
+          timeout: `${winner === "white" ? "Black" : "White"} ran out of time`,
+        };
+
+        goReason.textContent = reasonLabels[reason] || reason;
+        goTitle.textContent = `${winner === "white" ? "White" : "Black"} wins`;
+        goSubtitle.textContent = subtitleMap[reason] || `${reason}`;
+        goWhiteMoves.textContent = state.moves.white;
+        goBlackMoves.textContent = state.moves.black;
+
+        overlay.className = `game-over-overlay visible winner-${winner}`;
+      }
+
+      // ── WebSocket ────────────────────────────────────────────────────────
+
+      const wsScheme = location.protocol === "https:" ? "wss" : "ws";
       let socket = null;
-      try {
-        socket = new WebSocket(`ws://${window.location.host}/ws/game/5/`);
-        socket.onopen = () => {};
+
+      function openSocket() {
+        socket = new WebSocket(
+          `${wsScheme}://${location.host}/ws/game/${GAME_ID}/`,
+        );
+
+        socket.onopen = () => {
+          connDot.className = "conn-dot connected";
+        };
+
         socket.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
-            console.log("Received data:", data);
-            if (data.currentPlayer) state.currentPlayer = data.currentPlayer;
-            if (data.times) state.times = data.times;
-            render();
-          } catch {}
-        };
-        socket.onclose = () => {};
-      } catch {}
 
+            if (data.type === "game_over") {
+              showGameOver(data.winner, data.reason);
+              render();
+              return;
+            }
+
+            // state_sync or game_move — server is authoritative
+            if (data.currentPlayer) state.currentPlayer = data.currentPlayer;
+            if (data.times) {
+              state.times = data.times;
+              // Re-anchor local tick to server time
+              lastTick = Date.now();
+              if (!state.running && !state.gameOver) startClock();
+            }
+            if (data.moveCount !== undefined) {
+              // Distribute move counts evenly (server tracks total, not per-player)
+              const total = data.moveCount;
+              state.moves.white = Math.ceil(total / 2);
+              state.moves.black = Math.floor(total / 2);
+            }
+
+            render();
+          } catch (err) {
+            console.error("ws parse error", err);
+          }
+        };
+
+        socket.onclose = () => {
+          connDot.className = "conn-dot error";
+          // Reconnect after 2 s
+          setTimeout(openSocket, 2000);
+        };
+
+        socket.onerror = () => {
+          connDot.className = "conn-dot error";
+        };
+      }
+
+      openSocket();
       render();
+
+      document.getElementById("go-new-game").addEventListener("click", () => {
+        window.location.href = "/game/lobby"; // adjust to your lobby URL
+      });
     </script>
   </body>
 </html>
